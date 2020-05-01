@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Image/close.png</file>
+        <file>Image/open.png</file>
+        <file>Image/save.png</file>
+        <file>Image/theodolite.png</file>
+    </qresource>
+</RCC>
