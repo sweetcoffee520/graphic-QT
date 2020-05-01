@@ -29,6 +29,8 @@ public:
     QPointF *points;
     QString savepath;
     QLabel *label=new QLabel();
+    bool saveflag=false;
+    QString savefilename;
 protected:
     void paintEvent(QPaintEvent *);
 private slots:

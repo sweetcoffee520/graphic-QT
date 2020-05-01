@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setFixedSize(1650,900);
+    //setFixedSize(1650,900);
 }
 
 MainWindow::~MainWindow()
@@ -28,15 +28,17 @@ void MainWindow::paintEvent(QPaintEvent *)
     if(flag!='N')
     {
         //新建pix以储存图像
-        QPixmap pix(1600,700);
+        QPixmap pix(2400,1500);
         pix.fill(Qt::white);
         int i;
         QPainter painter(&pix);
         painter.setRenderHint(QPainter::Antialiasing);
         //平移坐标原点到左下角处
-        painter.setWindow(0,0,ui->scrollArea->width(),ui->scrollArea->height());
-        painter.translate(ui->scrollArea->width()/10,ui->scrollArea->height()*9/10); //坐标系统平移变换
-        painter.scale(0.6*ui->scrollArea->width()/1600,-0.6*ui->scrollArea->height()/750); //Y轴向上翻转,翻转成正常平面直角坐标系
+        painter.setWindow(0,100,2400,1500);
+        //painter.setViewport(0,-100,9*ui->scrollArea->width()/10,ui->scrollArea->height());
+        painter.translate(pix.width()/10,pix.height()*9/10); //坐标系统平移变换
+        //painter.scale(0.6*ui->scrollArea->width()/1600,-0.6*ui->scrollArea->height()/750); //Y轴向上翻转,翻转成正常平面直角坐标系
+        painter.scale(1,-1);
         QPen pen(QColor(255,0,0),2);
         painter.setPen(pen);
         //获取偏离度最大和最小的值
@@ -196,7 +198,11 @@ void MainWindow::paintEvent(QPaintEvent *)
             break;
         }
         }
-        label->setPixmap(pix);
+        if(saveflag==true)
+        {
+            pix.save(savefilename);
+        }
+        label->setPixmap(pix.scaled(ui->scrollArea->size(),Qt::KeepAspectRatio));
         ui->scrollArea->setWidget(label);
     }
 
@@ -234,14 +240,17 @@ void MainWindow::on_actionopen_triggered()
 
 void MainWindow::on_actionsave_triggered()
 {
-    savepath="";
-    QString filepath=QFileDialog::getSaveFileName(this,QStringLiteral("保存文件"),"","*.jpg");
-    QFile outfile(filepath);
+    savefilename=QFileDialog::getSaveFileName(this,QStringLiteral("保存文件"),"","*.jpg");
+    QFile outfile(savefilename);
     if(!outfile.open(QIODevice::WriteOnly)){QMessageBox::warning(this,QStringLiteral("警告"),QStringLiteral("文件未打开"));
     return;
     }
-    QScreen *screen = QGuiApplication::primaryScreen();
-    screen->grabWindow(ui->scrollArea->winId()).save(filepath);
+    saveflag=true;
+    //QScreen *screen = QGuiApplication::primaryScreen();
+    //screen->grabWindow(ui->scrollArea->winId()).save(filepath);
+    repaint();
+    saveflag=false;
+
 }
 
 void MainWindow::on_actionclose_triggered()
